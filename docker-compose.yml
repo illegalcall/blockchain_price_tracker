@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  server:
+    image: node:20
+    container_name: server
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: sh -c "npm install && NODE_OPTIONS='--experimental-global-webcrypto' npm run start:dev"
+    env_file:
+      - ./.env
+    environment:
+      - DB_HOST=localhost
+    depends_on:
+      pg-db:
+        condition: service_healthy
+    ports:
+      - '${PORT}:${PORT}'
+
+  pg-db:
+    image: postgres:15
+    container_name: pg-db
+    env_file:
+      - ./.env.db
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d mydatabase"]
+      interval: 5s
+      timeout: 5s
+      retries: 5  
+
+volumes:
+  postgres_data:
+  postgres_test_data:
