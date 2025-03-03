@@ -1,73 +1,115 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Blockchain Price Tracker
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A powerful and scalable blockchain price tracking service built with Nest.js that monitors cryptocurrency prices, provides customizable alerts, and offers swap rate calculations.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Features
 
-## Description
+### 🕒 Automated Price Tracking
+- Ethereum and Polygon price data collected every 5 minutes
+- Historical data storage in a PostgreSQL database
+- Clean and performant data model with MikroORM
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### 📈 Price Alert System
+- **Price Change Notifications**: Automatic email alerts when prices change by 3% or more compared to one hour ago
+- **Custom Price Triggers**: Set personalized price alerts for specific blockchain assets and receive email notifications
 
-## Installation
+### 🔄 Swap Rate Calculator
+- Calculate ETH to BTC conversion rates in real-time
+- Transparent fee calculations (0.03%)
+- Returns both amount received and fee information in wei and dollar values
 
+### 📊 Historical Data API
+- RESTful endpoints for retrieving hourly price data (within 24 hours)
+- Clean, well-documented API with Swagger integration
+
+## Technical Stack
+
+- **Backend**: Nest.js framework with TypeScript
+- **Database**: PostgreSQL with MikroORM for database interactions
+- **API Integration**: Moralis for blockchain data
+- **Email Service**: MailerSend for reliable alert delivery
+- **Documentation**: Swagger for comprehensive API documentation
+- **Containerization**: Docker and Docker Compose for easy deployment
+- **Testing**: Jest for unit and integration testing
+
+## API Endpoints
+
+The application provides the following API endpoints:
+
+### Price Data
+- `GET /prices/:tokenAddress` - Retrieve historical price data for a specific token
+
+### Price Alerts
+- `POST /alert` - Create a new price alert
+- `GET /alert/email/:email` - Get all alerts for a specific email address
+- `GET /alert/id/:id` - Get a specific alert by ID
+
+### Swap Rates
+- `GET /swap/:tokenAddress` - Calculate swap rates between tokens
+
+## Running the Application
+
+### Prerequisites
+- Docker and Docker Compose
+
+### Setup Steps
+
+1. Clone the repository
 ```bash
-$ npm install
+git clone https://github.com/yourusername/blockchain-price-tracker.git
+cd blockchain-price-tracker
 ```
 
-## Running the app
-
+2. Copy the environment example files
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+cp .env.example .env
+cp .env.example.db .env.db
 ```
 
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+3. Configure environment variables in `.env` file:
+```
+PORT=5050
+MORALIS_API_KEY='your_moralis_api_key'
+MAILERSEND_API_KEY='your_mailersend_api_key'
+NODEMAILER_EMAIL='your_email@example.com'
+NODEMAILER_PASSWORD='your_email_password'
 ```
 
-## Support
+4. Configure database environment variables in `.env.db` file:
+```
+POSTGRES_USER=myuser
+POSTGRES_PASSWORD=mypassword
+POSTGRES_DB=mydatabase
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+5. Start the application with Docker Compose
+```bash
+docker compose up --build
+```
 
-## Stay in touch
+6. Access the application
+- API: http://localhost:5050
+- Swagger Documentation: http://localhost:5050/api
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Architecture
+
+The application follows a clean, modular architecture:
+
+- **Cron Service**: Handles scheduled tasks like price data collection and price alert checks
+- **Price Module**: Manages price data storage and retrieval
+- **Alert Module**: Handles alert creation and notification
+- **Swap Module**: Calculates exchange rates and fees
+- **Moralis Service**: Interfaces with the Moralis API for real-time blockchain data
+
+## Implementation Details
+
+- **Automatic Price Tracking**: The application uses cron jobs to fetch and store cryptocurrency prices every 5 minutes
+- **Price Alert System**: 
+  - Automatic emails are sent when price changes exceed 3% in an hour
+  - Users can set custom price alerts through the API
+- **Data Storage**: All price data is stored in PostgreSQL with timestamps for historical tracking
+- **Swagger Documentation**: All endpoints are fully documented with Swagger for easy testing and integration
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
+This project is licensed under the MIT License - see the LICENSE file for details.
